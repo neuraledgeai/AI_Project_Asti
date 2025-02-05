@@ -10,5 +10,5 @@ response = client.chat.completions.create(
 
 st.title("Asti")
 st.write(
-    f"Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
+    f"."
 )
