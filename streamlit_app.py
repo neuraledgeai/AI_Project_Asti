@@ -1,6 +1,13 @@
 import streamlit as st
 from together import Together
 
+# Set page title and layout
+st.set_page_config(
+    page_title="AI Project Asti",
+    layout="wide",
+)
+
+
 client = Together(api_key="22c7d3723a5c143b4f1ac02fd15b5d0d5034629c91abe3281d2f1e029c2aa371")
 
 # Store chat history in session state
