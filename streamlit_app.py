@@ -10,5 +10,5 @@ response = client.chat.completions.create(
 
 st.title("Asti")
 st.write(
-    f"."
+    f"{response.choices[0].message.content}."
 )
