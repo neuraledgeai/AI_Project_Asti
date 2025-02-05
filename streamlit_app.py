@@ -7,8 +7,8 @@ st.set_page_config(
     layout="wide",
 )
 
-
-client = Together(api_key="22c7d3723a5c143b4f1ac02fd15b5d0d5034629c91abe3281d2f1e029c2aa371")
+api_key = st.secrets["API_KEY"]
+client = Together(api_key=api_key)
 
 # Store chat history in session state
 if "messages" not in st.session_state:
