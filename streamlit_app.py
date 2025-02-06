@@ -29,28 +29,23 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant."}]
 if "document_content" not in st.session_state:
     st.session_state.document_content = None
-if "chat_started" not in st.session_state:
-    st.session_state.chat_started = False
+#if "chat_started" not in st.session_state:
+#    st.session_state.chat_started = False
 
-# File uploader (only shown if chat hasn't started)
-if not st.session_state.chat_started:
-    with st.expander("Minimize", expanded=True):
-        st.write("### Upload a document or start typing your question below.")
-        uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
-    
-        if uploaded_file is not None:
-            file_type = uploaded_file.name.split(".")[-1].lower()
-            try:
-                if file_type == "pdf":
-                    st.session_state.document_content = read_pdf(uploaded_file)
-                elif file_type == "docx":
-                    st.session_state.document_content = read_word(uploaded_file)
-                
+with st.expander("Minimize", expanded=True):
+    st.write("### Upload a document or start typing your question below.")
+    uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
+    if uploaded_file is not None:
+        file_type = uploaded_file.name.split(".")[-1].lower()
+        try:
+            if file_type == "pdf":
+                st.session_state.document_content = read_pdf(uploaded_file)
+            elif file_type == "docx":
+                st.session_state.document_content = read_word(uploaded_file)
                 st.success("Document uploaded successfully! You can now start chatting.")
-                #st.session_state.chat_started = True
-                #st.experimental_rerun()  # Rerun to hide the file uploader
-            except Exception as e:
-                st.error(f"Error reading file: {e}")
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
+    
 
 # Chat interface (always visible)
 for message in st.session_state.messages:
@@ -63,7 +58,6 @@ for message in st.session_state.messages:
 
 # Chat input
 if user_input := st.chat_input("Type your message..."):
-    #st.session_state.chat_started = True  # Ensure chat is marked as started
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
