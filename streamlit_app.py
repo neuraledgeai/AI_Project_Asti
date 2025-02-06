@@ -8,7 +8,7 @@ client = Together(api_key=api_key)
 
 idle = 0
 
-if idle:
+if idle==0:
     # Function to read PDF
     def read_pdf(file):
         pdf_reader = PdfReader(file)
