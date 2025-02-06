@@ -4,7 +4,8 @@ from PyPDF2 import PdfReader
 from docx import Document
 
 # Initialize Together client
-client = Together(api_key="xxxxxx")
+api_key = st.secrets["API_KEY"]
+client = Together(api_key=api_key)
 
 # Initialize session state variables
 if "messages" not in st.session_state:
