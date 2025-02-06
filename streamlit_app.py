@@ -53,7 +53,7 @@ if not st.session_state.chat_started:
 
 # Chat interface (always visible)
 for message in st.session_state.messages:
-    st.session_state.chat_started = True
+    #st.session_state.chat_started = True
     if message["role"] == "user":
         with st.chat_message("user"):
             st.markdown(message["content"])
@@ -86,5 +86,6 @@ if user_input := st.chat_input("Type your message..."):
 
     # Append AI response to the chat
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
+    st.session_state.chat_started = True
     with st.chat_message("assistant"):
         st.markdown(ai_message)
