@@ -82,6 +82,7 @@ if user_input := st.chat_input("Type your message..."):
         messages=messages_with_context,
     )
     ai_message = response.choices[0].message.content
+    st.session_state.chat_started = True
 
     # Append AI response to the chat
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
