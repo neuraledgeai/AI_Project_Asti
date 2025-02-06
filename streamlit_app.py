@@ -4,7 +4,7 @@ from PyPDF2 import PdfReader
 from docx import Document
 
 # Initialize Together client
-api_key = st.secrets["API_KEY"]
+api_key = st.secrets["API_KEY"]  # Make sure you have your API key in secrets.toml
 client = Together(api_key=api_key)
 
 # Functions to extract text from files
@@ -24,13 +24,34 @@ def read_word(file):
         text += paragraph.text + "\n"
     return text
 
-# Initialize session state
+# Initialize session states
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant."}]
 if "document_content" not in st.session_state:
-    st.session_state.document_content = ""
+    st.session_state.document_content = None
+if "chat_started" not in st.session_state:
+    st.session_state.chat_started = False
 
-# Display chat messages
+# File uploader (only shown if chat hasn't started)
+if not st.session_state.chat_started:
+    st.write("### Upload a document or start typing your question below.")
+    uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
+
+    if uploaded_file is not None:
+        file_type = uploaded_file.name.split(".")[-1].lower()
+        try:
+            if file_type == "pdf":
+                st.session_state.document_content = read_pdf(uploaded_file)
+            elif file_type == "docx":
+                st.session_state.document_content = read_word(uploaded_file)
+
+            st.success("Document uploaded successfully! You can now start chatting.")
+            st.session_state.chat_started = True  # Set immediately after successful upload
+            st.experimental_rerun()  # Rerun to hide the file uploader
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
+
+# Chat interface (always visible)
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user"):
@@ -39,31 +60,23 @@ for message in st.session_state.messages:
         with st.chat_message("assistant"):
             st.markdown(message["content"])
 
-# File uploader within the chat interface
-uploaded_file = st.file_uploader("Upload a PDF or Word file to provide context", type=["pdf", "docx"], label_visibility="collapsed")
-
-if uploaded_file is not None:
-    file_type = uploaded_file.name.split(".")[-1].lower()
-    try:
-        if file_type == "pdf":
-            document_content = read_pdf(uploaded_file)
-        elif file_type == "docx":
-            document_content = read_word(uploaded_file)
-        
-        st.session_state.document_content = document_content  # Store the document content
-        st.success("File uploaded successfully! You can now ask questions about it.")
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
-
 # Chat input
 if user_input := st.chat_input("Type your message..."):
-    # Add user message to chat
+    if not st.session_state.chat_started:  # Set chat_started BEFORE adding the message
+        st.session_state.chat_started = True
+        st.experimental_rerun()  # Immediately hide the file uploader
+
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Include document context if available
-    context_message = f"The user uploaded a document with the following content:\n\n{st.session_state.document_content}\n\n" if st.session_state.document_content else ""
+    # Add document context to the model's input if available
+    if st.session_state.document_content:
+        context_message = f"The user has uploaded a document. Use the following context to assist them:\n\n{st.session_state.document_content}\n\n"
+    else:
+        context_message = ""
+
+    # Combine context and chat history for the model
     messages_with_context = [{"role": "system", "content": context_message}] + st.session_state.messages
 
     # Get AI response
@@ -73,7 +86,7 @@ if user_input := st.chat_input("Type your message..."):
     )
     ai_message = response.choices[0].message.content
 
-    # Add assistant message to chat
+    # Append AI response to the chat
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
     with st.chat_message("assistant"):
         st.markdown(ai_message)
