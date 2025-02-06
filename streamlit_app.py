@@ -3,66 +3,87 @@ from together import Together
 from PyPDF2 import PdfReader
 from docx import Document
 
+# Initialize Together client
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
 
-# ... (file reading functions remain the same)
+# Functions to extract text from files
+def read_pdf(file):
+    pdf_reader = PdfReader(file)
+    text = ""
+    for page in pdf_reader.pages:
+        page_text = page.extract_text()
+        if page_text:
+            text += page_text.strip() + "\n\n"
+    return text
 
+def read_word(file):
+    doc = Document(file)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
+# Initialize session states
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant.  I will provide context from uploaded files."}]
+    st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant."}]
+if "document_content" not in st.session_state:
+    st.session_state.document_content = None
+if "chat_started" not in st.session_state:
+    st.session_state.chat_started = False
 
-if "file_context" not in st.session_state: # Store file context separately
-    st.session_state.file_context = ""
-
-if not st.session_state.messages or len(st.session_state.messages) == 1: # Check if only the initial system message is present
-    idle = True
-else:
-    idle = False
-
-
-if idle:
+# File uploader (only shown if chat hasn't started)
+if not st.session_state.chat_started:
+    st.write("### Upload a document or start typing your question below.")
     uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
 
     if uploaded_file is not None:
         file_type = uploaded_file.name.split(".")[-1].lower()
-        if file_type == "pdf":
-            try:
-                text = read_pdf(uploaded_file)
-                st.session_state.file_context = text  # Store in file_context
-                st.session_state.messages[0]["content"] = "You are a helpful assistant. Here is the context from the uploaded PDF:\n\n" + text #Update system message with context
-                idle = False
-                st.experimental_rerun()
-            except Exception as e:
-                st.error(f"Error reading PDF: {e}")
-        elif file_type == "docx":
-            try:
-                text = read_word(uploaded_file)
-                st.session_state.file_context = text  # Store in file_context
-                st.session_state.messages[0]["content"] = "You are a helpful assistant. Here is the context from the uploaded Word document:\n\n" + text #Update system message with context
-                idle = False
-                st.experimental_rerun()
-            except Exception as e:
-                st.error(f"Error reading Word document: {e}")
-        else:
-            st.error("Unsupported file type!")
+        try:
+            if file_type == "pdf":
+                st.session_state.document_content = read_pdf(uploaded_file)
+            elif file_type == "docx":
+                st.session_state.document_content = read_word(uploaded_file)
+            
+            st.success("Document uploaded successfully! You can now start chatting.")
+            st.session_state.chat_started = True
+            st.experimental_rerun()  # Rerun to hide the file uploader
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
 
-# ... (chat display remains the same)
+# Chat interface (always visible)
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        with st.chat_message("user"):
+            st.markdown(message["content"])
+    elif message["role"] == "assistant":
+        with st.chat_message("assistant"):
+            st.markdown(message["content"])
 
+# Chat input
 if user_input := st.chat_input("Type your message..."):
+    st.session_state.chat_started = True  # Ensure chat is marked as started
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Add file context to the messages sent to the model
-    messages_for_model = st.session_state.messages[:]  # Create a copy
-    # No need to explicitly add context here, it is already in the system message.
+    # Add document context to the model's input if available
+    if st.session_state.document_content:
+        context_message = f"The user has uploaded a document. Use the following context to assist them:\n\n{st.session_state.document_content}\n\n"
+    else:
+        context_message = ""
 
+    # Combine context and chat history for the model
+    messages_with_context = [{"role": "system", "content": context_message}] + st.session_state.messages
+
+    # Get AI response
     response = client.chat.completions.create(
         model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
-        messages=messages_for_model,
+        messages=messages_with_context,
     )
-
     ai_message = response.choices[0].message.content
+
+    # Append AI response to the chat
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
     with st.chat_message("assistant"):
         st.markdown(ai_message)
