@@ -86,6 +86,6 @@ if user_input := st.chat_input("Type your message..."):
 
     # Append AI response to the chat
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
-    st.session_state.chat_started = True
     with st.chat_message("assistant"):
+        st.session_state.chat_started = True
         st.markdown(ai_message)
