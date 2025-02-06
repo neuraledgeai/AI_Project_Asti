@@ -40,7 +40,7 @@ if idle:  # Show file uploader only if idle
                 text = read_pdf(uploaded_file)
                 st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant. Here is the context from the uploaded PDF:\n\n" + text}] # Include extracted text as context
                 idle = False # Set idle to False after file upload
-                st.experimental_rerun() # Rerun to hide the uploader and show the chat
+                #st.experimental_rerun() # Rerun to hide the uploader and show the chat
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
         elif file_type == "docx":
@@ -48,7 +48,7 @@ if idle:  # Show file uploader only if idle
                 text = read_word(uploaded_file)
                 st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant. Here is the context from the uploaded Word document:\n\n" + text}] # Include extracted text as context
                 idle = False # Set idle to False after file upload
-                st.experimental_rerun() # Rerun to hide the uploader and show the chat
+                #st.experimental_rerun() # Rerun to hide the uploader and show the chat
             except Exception as e:
                 st.error(f"Error reading Word document: {e}")
         else:
