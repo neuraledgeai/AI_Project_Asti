@@ -3,6 +3,12 @@ from together import Together
 from PyPDF2 import PdfReader
 from docx import Document
 
+# Set page title and layout
+st.set_page_config(
+    page_title="Asti-M1",
+    layout="wide",
+)
+
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
