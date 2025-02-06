@@ -47,7 +47,7 @@ if not st.session_state.chat_started:
                     st.session_state.document_content = read_word(uploaded_file)
                 
                 st.success("Document uploaded successfully! You can now start chatting.")
-                st.session_state.chat_started = True
+                #st.session_state.chat_started = True
                 #st.experimental_rerun()  # Rerun to hide the file uploader
             except Exception as e:
                 st.error(f"Error reading file: {e}")
