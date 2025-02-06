@@ -6,9 +6,9 @@ from docx import Document
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
 
-idle = 0
+idle=True
 
-if idle==0:
+if idle:
     # Function to read PDF
     def read_pdf(file):
         pdf_reader = PdfReader(file)
@@ -82,6 +82,5 @@ if user_input := st.chat_input("Type your message..."):
 # Extract and display AI response
     ai_message = response.choices[0].message.content
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
-    idle == 1
     with st.chat_message("assistant"):
         st.markdown(ai_message)
