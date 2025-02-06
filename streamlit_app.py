@@ -54,7 +54,6 @@ if not st.session_state.chat_started:
 
 # Chat interface (always visible)
 for message in st.session_state.messages:
-    #st.session_state.chat_started = True
     if message["role"] == "user":
         with st.chat_message("user"):
             st.markdown(message["content"])
@@ -64,7 +63,7 @@ for message in st.session_state.messages:
 
 # Chat input
 if user_input := st.chat_input("Type your message..."):
-    st.session_state.chat_started = True  # Ensure chat is marked as started
+    #st.session_state.chat_started = True  # Ensure chat is marked as started
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
