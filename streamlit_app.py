@@ -70,7 +70,7 @@ if user_input := st.chat_input("Type your message..."):
 
     # Add document context to the model's input if available
     if st.session_state.document_content:
-        context_message = f"The user has uploaded a document. Use the following context to assist them:\n\n{st.session_state.document_content}\n\n"
+        context_message = f"The user has uploaded a PDF or word document. Use the following context extracted as text to assist them:\n\n{st.session_state.document_content}\n\n"
     else:
         context_message = ""
 
