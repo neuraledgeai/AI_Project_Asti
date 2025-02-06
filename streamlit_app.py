@@ -5,7 +5,7 @@ from docx import Document
 
 # Set page title and layout
 st.set_page_config(
-    page_title="Asti-M1",
+    page_title="Asti-M2",
     layout="wide",
 )
 
