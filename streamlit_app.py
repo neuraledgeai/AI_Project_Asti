@@ -3,53 +3,61 @@ from together import Together
 from PyPDF2 import PdfReader
 from docx import Document
 
-# Initialize Together client
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
 
-# Initialize session state variables
-if "messages" not in st.session_state:
-    # Only include messages we want to display (system messages used for context won't be shown)
-    st.session_state.messages = []
-if "document_content" not in st.session_state:
-    st.session_state.document_content = None
-if "chat_started" not in st.session_state:
-    st.session_state.chat_started = False
+idle = True
 
-# Functions to extract text from files
-def read_pdf(file):
-    pdf_reader = PdfReader(file)
-    text = ""
-    for page in pdf_reader.pages:
-        page_text = page.extract_text()
-        if page_text:
-            text += page_text.strip() + "\n\n"
-    return text
+if idle:
+    # Function to read PDF
+    def read_pdf(file):
+        pdf_reader = PdfReader(file)
+        text = ""
+        for page in pdf_reader.pages:
+            # Extract text and ensure paragraph separation
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text.strip() + "\n\n"  # Add extra line breaks
+        return text
 
-def read_word(file):
-    doc = Document(file)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
-    return text
+    # Function to read Word document
+    def read_word(file):
+        doc = Document(file)
+        text = ""
+        for paragraph in doc.paragraphs:
+            text += paragraph.text + "\n"
+        return text
 
-# --- Top of the App: File Uploader (only if chat hasn't started) ---
-if not st.session_state.chat_started:
-    st.write("### Welcome! Start by uploading a document (PDF or Word) or type your query below.")
+    # File uploader
     uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
 
     if uploaded_file is not None:
-        file_type = uploaded_file.name.split('.')[-1].lower()
-        try:
-            if file_type == "pdf":
-                st.session_state.document_content = read_pdf(uploaded_file)
-            elif file_type == "docx":
-                st.session_state.document_content = read_word(uploaded_file)
-            st.success("Document uploaded successfully! You can now start chatting.")
-        except Exception as e:
-            st.error(f"Error reading file: {e}")
+        file_type = uploaded_file.name.split(".")[-1].lower()
+        
+        if file_type == "pdf":
+            try:
+                text = read_pdf(uploaded_file)
+                #st.subheader("Extracted Text from PDF:")
+                #st.text_area("PDF Content", text, height=300)
+            except Exception as e:
+                st.error(f"Error reading PDF: {e}")
+        
+        elif file_type == "docx":
+            try:
+                text = read_word(uploaded_file)
+                #st.subheader("Extracted Text from Word Document:")
+                #st.text_area("Word Content", text, height=300)
+            except Exception as e:
+                st.error(f"Error reading Word document: {e}")
+        
+        else:
+            st.error("Unsupported file type! Please upload a PDF or Word document.")
 
-# --- Chat Display: Show conversation history (only user & assistant messages) ---
+# Store chat history in session state
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "system", "content": "You are a helpful assistant."}]
+
+# Display chat history
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user"):
@@ -58,38 +66,22 @@ for message in st.session_state.messages:
         with st.chat_message("assistant"):
             st.markdown(message["content"])
 
-# --- Chat Input ---
-user_input = st.chat_input("Type your message...")
-
-if user_input:
-    # Mark that chat has started so uploader is no longer shown
-    st.session_state.chat_started = True
-
-    # Append user's message to the conversation history
+# Chat input for user
+if user_input := st.chat_input("Type your message..."):
+    idle = False
+    # Add user's message to chat history
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # If a document was uploaded, add a context message for the AI just once.
-    # This system message will not be shown to the user.
-    if st.session_state.document_content and not any(
-        msg.get("role") == "system" and "uploaded document" in msg.get("content", "")
-        for msg in st.session_state.messages
-    ):
-        context_message = {
-            "role": "system",
-            "content": "The user has uploaded a document. Use its content as context when answering questions."
-        }
-        st.session_state.messages.insert(0, context_message)
-
-    # Get AI response
+# Get AI response
     response = client.chat.completions.create(
         model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
         messages=st.session_state.messages,
     )
-    ai_message = response.choices[0].message.content
 
-    # Append AI response to conversation history and display it
+# Extract and display AI response
+    ai_message = response.choices[0].message.content
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
     with st.chat_message("assistant"):
         st.markdown(ai_message)
