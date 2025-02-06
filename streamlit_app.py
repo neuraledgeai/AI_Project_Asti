@@ -68,7 +68,6 @@ for message in st.session_state.messages:
 
 # Chat input for user
 if user_input := st.chat_input("Type your message..."):
-    idle = False
     # Add user's message to chat history
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
@@ -83,5 +82,6 @@ if user_input := st.chat_input("Type your message..."):
 # Extract and display AI response
     ai_message = response.choices[0].message.content
     st.session_state.messages.append({"role": "assistant", "content": ai_message})
+    idle=False
     with st.chat_message("assistant"):
         st.markdown(ai_message)
