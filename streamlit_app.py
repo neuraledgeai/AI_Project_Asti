@@ -74,8 +74,20 @@ if user_input := st.chat_input("Type your message..."):
         messages=messages_with_context,
     )
     ai_message = response.choices[0].message.content
-
+    
+    # Separate <think> part from the main response
+    import re
+    think_pattern = re.compile(r"<think>(.*?)</think>", re.DOTALL)
+    think_match = think_pattern.search(ai_message)
+    think_content = think_match.group(1).strip() if think_match else None
+    clean_response = think_pattern.sub("", ai_message).strip()
+    
     # Append and display AI response
-    st.session_state.messages.append({"role": "assistant", "content": ai_message})
+    st.session_state.messages.append({"role": "assistant", "content": clean_response})
     with st.chat_message("assistant"):
-        st.markdown(ai_message)
+        st.markdown(clean_response)
+    
+        # Show "thinking" part in an expander if it exists
+        if think_content:
+            with st.expander("🤔 Model's Thought Process (Click to view)"):
+                st.markdown(think_content)
