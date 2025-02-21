@@ -21,7 +21,7 @@ if "document_content" not in st.session_state:
     st.session_state.document_content = None
 
 # Model selector using segmented control
-model_choice = st.segmented_control("Choose mode:", ["Default", "Reason"])
+model_choice = st.segmented_control("Choose mode:", ["Reason"])
 st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
 # Functions to extract text from files
