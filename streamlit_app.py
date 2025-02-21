@@ -21,8 +21,8 @@ if "document_content" not in st.session_state:
     st.session_state.document_content = None
 
 # Model selector using segmented control
-model_choice = st.segmented_control("Choose mode:", ["Reason"])
-st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
+#model_choice = st.segmented_control("Choose mode:", ["Reason"])
+#st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
 # Functions to extract text from files
 def read_pdf(file):
@@ -46,6 +46,9 @@ with st.expander("Minimize", expanded=True):
             st.success("Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"Error reading file: {e}")
+    # Model selector using segmented control
+    model_choice = st.segmented_control("Choose mode:", ["Reason"])
+    st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
 # Display chat messages
 for message in st.session_state.messages:
@@ -89,5 +92,5 @@ if user_input := st.chat_input("Type your message..."):
     
         # Show "thinking" part in an expander if it exists
         if think_content:
-            with st.expander("🤔 Model's Thought Process (Click to view)"):
+            with st.expander("🤔 Model's Thought Process"):
                 st.markdown(think_content)
