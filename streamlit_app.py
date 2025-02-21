@@ -79,7 +79,8 @@ if user_input := st.chat_input("Type your message..."):
 
     # Get AI response
     response = client.chat.completions.create(
-        model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        #model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        model="deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free",
         messages=messages_with_context,
     )
     ai_message = response.choices[0].message.content
