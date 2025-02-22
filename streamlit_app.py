@@ -91,7 +91,7 @@ if user_input := st.chat_input("Type your message..."):
         response = client.chat.completions.create(
             model=st.session_state.selected_model,
             messages=messages_with_context,
-            max_tokens=1000,  # Reasonable output size
+            #max_tokens=1000,  # Reasonable output size
         )
         ai_message = response.choices[0].message.content
 
