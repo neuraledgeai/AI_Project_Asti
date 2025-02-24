@@ -15,7 +15,7 @@ api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
 
 # Model names
-META_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+META_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free" #"meta-llama/Llama-3.3-70B-Instruct-Turbo"
 DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
 
 # Functions to extract text from files
