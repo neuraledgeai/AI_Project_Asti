@@ -43,17 +43,6 @@ if "document_content" not in st.session_state:
 if "selected_model" not in st.session_state:
     st.session_state.selected_model = META_MODEL
 
-# Model switch using segmented control
-model_choice = st.segmented_control(
-    "",
-    options=["Default", "Reason"],
-    format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
-    default="Default"
-)
-
-# Update model based on user choice
-st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
-
 # File upload section
 with st.expander("📄 Upload a Document (Optional)", expanded=True):
     uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
@@ -67,6 +56,18 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
+
+    # Model switch using segmented control
+    model_choice = st.segmented_control(
+        "",
+        options=["Default", "Reason"],
+        format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
+        default="Default"
+    )
+    
+    # Update model based on user choice
+    st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
+
 
 # Display chat history
 for message in st.session_state.messages:
