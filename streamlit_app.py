@@ -48,6 +48,7 @@ model_choice = st.segmented_control(
     "Mode Selection",
     options=["Default", "Reason"],
     format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
+    default="Default"
 )
 
 # Update model based on user choice
