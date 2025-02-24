@@ -47,7 +47,7 @@ if "selected_model" not in st.session_state:
 model_choice = st.segmented_control(
     "Mode Selection",
     options=["Default", "Reason"],
-    format_func=lambda x: "Reason" if x == "Reason" else "Default (Meta)",
+    format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
 )
 
 # Update model based on user choice
