@@ -110,7 +110,7 @@ if user_input := st.chat_input("Type your message..."):
 
             # Show "thinking" part in an expander if it exists
             if think_content:
-                with st.expander("🤔 Model's Thought Process (Click to view)"):
+                with st.expander("🤔 Model's Thought Process"):
                     st.markdown(think_content)
 
     except Exception as e:
