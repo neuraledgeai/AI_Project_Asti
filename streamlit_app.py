@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 #st.page_link("streamlit_app.py", label="Home", icon="🏠")
-st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
+#st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
 
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
