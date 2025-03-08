@@ -8,10 +8,10 @@ import re
 st.set_page_config(
     page_title="Asti-M1",
     layout="wide",
-    page_icon="🧊"
+    page_icon="🌟"
 )
 
-st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
+st.sidebar.page_link("streamlit_app.py", label="Chat", icon="🦋")
 st.sidebar.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
 st.sidebar.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
 st.sidebar.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
