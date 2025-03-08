@@ -56,6 +56,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
+    st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
 
     # Model switch using segmented control
     model_choice = st.segmented_control(
