@@ -7,10 +7,10 @@ import re
 # Set page title and layout
 st.set_page_config(
     page_title="Asti-M1www",
-    layout="wide",
-    menu_items=None
+    layout="wide"
 )
 
+st.sidebar.page_link("streamlit_app.py", label="Log in")
 #st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
 
 # Initialize Together client
