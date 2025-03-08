@@ -16,7 +16,7 @@ st.sidebar.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", 
 st.sidebar.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
 st.sidebar.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
 st.sidebar.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
-st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon=" 📞")
+st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
 
 # Initialize Together client
