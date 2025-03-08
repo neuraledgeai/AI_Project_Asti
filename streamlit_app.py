@@ -82,13 +82,15 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     
     #st.write("##")
     st.divider()
-    col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
+    col1, col2, col3 = st.columns(4)
     with col1:
         st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
     with col2:
         st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
     with col3:
         st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
+    with col4:
+        st.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
 
 # Display chat history
