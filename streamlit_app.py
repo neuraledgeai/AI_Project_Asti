@@ -10,18 +10,14 @@ st.set_page_config(
     layout="wide",
     page_icon="🌟"
 )
+st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
 with st.sidebar.expander("Legal and Support", expanded=True):
     st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
     st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
     st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
-    
-    #st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
-    #st.sidebar.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
-    #st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
-
-#st.page_link("streamlit_app.py", label="Chat", icon="💬")
-
-
+    st.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
+        
+st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
@@ -80,16 +76,6 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     
     # Update model based on user choice
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
-    
-    # Legal and Support
-    st.divider()
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
-    with col2:
-        st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
-    with col3:
-        st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
 
 
 # Display chat history
