@@ -13,7 +13,11 @@ st.set_page_config(
 
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
 st.sidebar.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
-#st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
+st.sidebar.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
+st.sidebar.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
+st.sidebar.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
+st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon=" 📞")
+
 
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
