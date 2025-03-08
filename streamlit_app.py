@@ -18,8 +18,8 @@ st.sidebar.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
 st.sidebar.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
 st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
-st.page_link("streamlit_app.py", label="Chat", icon="💬")
-st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
+#st.page_link("streamlit_app.py", label="Chat", icon="💬")
+
 
 
 # Initialize Together client
@@ -57,6 +57,7 @@ if "selected_model" not in st.session_state:
 
 # File upload section
 with st.expander("📄 Upload a Document (Optional)", expanded=True):
+    col1, col2 = st.columns(2)
     uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
     if uploaded_file is not None:
         file_type = uploaded_file.name.split(".")[-1].lower()
@@ -68,6 +69,10 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
+    with col1:
+        st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
+    with col2:
+        st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
 
     # Model switch using segmented control
     model_choice = st.segmented_control(
