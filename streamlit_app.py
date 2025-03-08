@@ -10,6 +10,9 @@ st.set_page_config(
     layout="wide",
 )
 
+st.page_link("streamlit_app.py", label="Home", icon="🏠")
+st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
+
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
@@ -56,7 +59,6 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
-    st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
 
     # Model switch using segmented control
     model_choice = st.segmented_control(
