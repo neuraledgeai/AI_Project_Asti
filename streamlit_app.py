@@ -16,8 +16,7 @@ with st.sidebar.expander("Legal and Support"):
     st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
     st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
     st.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
-        
-st.sidebar.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
+    st.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
