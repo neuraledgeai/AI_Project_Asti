@@ -8,6 +8,7 @@ import re
 st.set_page_config(
     page_title="Asti-M1",
     layout="wide",
+    menu_items=None
 )
 
 #st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
