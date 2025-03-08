@@ -57,7 +57,6 @@ if "selected_model" not in st.session_state:
 
 # File upload section
 with st.expander("📄 Upload a Document (Optional)", expanded=True):
-    col1, col2 = st.columns(2)
     uploaded_file = st.file_uploader("Upload a PDF or Word file", type=["pdf", "docx"])
     if uploaded_file is not None:
         file_type = uploaded_file.name.split(".")[-1].lower()
@@ -69,6 +68,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
+    col1, col2 = st.columns(2)
     with col1:
         st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
     with col2:
