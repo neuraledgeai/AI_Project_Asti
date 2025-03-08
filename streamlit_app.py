@@ -11,8 +11,8 @@ st.set_page_config(
     menu_items=None
 )
 
-st.sidebar.page_link("streamlit_app.py", label="Chat")
-st.sidebar.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions")
+st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
+st.sidebar.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
 #st.page_link("Terms_&_Conditions.py", label="Terms & Conditions", icon="📝")
 
 # Initialize Together client
