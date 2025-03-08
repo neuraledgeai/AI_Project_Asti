@@ -11,7 +11,7 @@ st.set_page_config(
     page_icon="🌟"
 )
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
-with st.sidebar.expander("Legal and Support", expanded=True):
+with st.sidebar.expander("Legal and Support"):
     st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
     st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
     st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
