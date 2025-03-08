@@ -80,7 +80,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     # Update model based on user choice
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
     
-    st.write("#")
+    st.write("##")
     col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
     with col1:
         st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
