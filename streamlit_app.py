@@ -6,9 +6,9 @@ import re
 
 # Set page title and layout
 st.set_page_config(
-    page_title="Asti-M1www",
+    page_title="Asti-M1",
     layout="wide",
-    menu_items=None
+    page_icon="🌟"
 )
 
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
