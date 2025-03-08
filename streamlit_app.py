@@ -68,12 +68,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
-    with col2:
-        st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
-
+            
     # Model switch using segmented control
     model_choice = st.segmented_control(
         "",
@@ -84,6 +79,11 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     
     # Update model based on user choice
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
+    col1, col2 = st.columns(2)
+    with col1:
+        st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
+    with col2:
+        st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
 
 
 # Display chat history
