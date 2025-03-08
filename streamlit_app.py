@@ -8,7 +8,7 @@ import re
 st.set_page_config(
     page_title="Asti-M1",
     layout="wide",
-    page_icon="🌟"
+    page_icon="🧊"
 )
 
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
