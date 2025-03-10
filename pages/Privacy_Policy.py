@@ -110,12 +110,14 @@ the repository—may be subject to GitHub's Privacy Policy. For more details on 
 [GitHub Privacy Policy](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). We encourage you to review their policy carefully.
 """)
 
-st.markdown("###### 4.4 No Third-Party Sharing")
+st.markdown("###### 4.4 Data Sharing Only with Essential Service Providers")
 st.write("""
 We do not share any user data with third parties intentionally. However, since this platform relies on services from Together AI, Streamlit, and GitHub, some 
-interactions—such as AI model usage, web hosting, and code management—may involve data processing in accordance with their respective privacy policies. Beyond these 
-essential services, no data is shared with any other third parties. Our goal is to keep Asti a transparent, minimalistic, and privacy-focused platform, ensuring secure 
-and responsible data handling at all times.
+interactions—such as AI model usage, web hosting, and code management—may involve data processing in accordance with their respective privacy policies. Asti uses 
+Microsoft Forms to collect user feedback and inquiries. Replies may be sent via Google, Apple, or Microsoft email services, subject to their respective 
+privacy policies. Any information submitted through Microsoft Forms is subject to [Microsoft's Privacy Policy](https://www.microsoft.com/en-us/privacy/privacystatement), and 
+emails sent via third-party providers are handled in accordance with their respective policies. Beyond these essential services, no data is shared with any other third 
+parties. Our goal is to keep Asti a transparent, minimalistic, and privacy-focused platform, ensuring secure and responsible data handling at all times.
 """)
 
 st.markdown("###### 4.5 Legal Requirements")
