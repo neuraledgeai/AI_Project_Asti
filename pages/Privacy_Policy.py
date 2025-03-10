@@ -46,16 +46,19 @@ st.markdown("**Effective Date:** March 10, 2025")
 
 st.markdown("#### 1. Introduction")
 st.write("""
-AI Project Asti ("Asti", "we", "us", or "our") is a not-for-profit, open-source platform provided by Neural Edge AI that allows users to interact with AI models. 
-We are committed to protecting the privacy of our users and strive to provide a transparent experience. This Privacy Policy outlines how we collect, use, and share 
-information when you use Asti. Please read it carefully.
+AI Project Asti ("Asti", "we", "us", or "our") is a not-for-profit, open-source platform developed by Neural Edge AI that allows users to interact with AI models. 
+We try to provide a concise AI interaction experience while maintaining a privacy-first approach with minimal data collection. This Privacy Policy outlines how we collect, use, and share 
+information when you use Asti. We are committed to transparency, security, and user privacy. By using Asti, you acknowledge and agree to the practices outlined in this policy.
 """)
 
 st.markdown("#### 2. Information We Collect")
+
 st.markdown("###### 2.1 Information You Provide")
 st.write("""
-Currently, Asti does not require any personal information such as your name, email address, or contact details. 
-There is no sign-in or registration process.
+Asti does not require users to provide any personal information, such as name, email address, or contact details, to use its core services. However, we may collect such 
+information if you choose to share it with us, for example, when reaching out for support or providing feedback. There is no sign-in or registration process, and we do not 
+collect identifiable user data. Additionally, since Asti operates on services like Together AI, Streamlit, and GitHub, interactions with the platform—such as 
+submitting prompts, accessing the web app, or viewing the open-source repository—may involve data processing in accordance with their respective privacy policies.
 """)
 
 st.markdown("###### 2.2 Information Collected")
