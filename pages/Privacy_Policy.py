@@ -63,10 +63,12 @@ submitting prompts, accessing the web app, or viewing the open-source repository
 
 st.markdown("###### 2.2 Information Collected")
 st.markdown("""
-- **Usage Data:** We may collect information about how you interact with Asti, such as the models you use and the prompts you submit. 
-  This data is used to improve the platform and analyze usage trends.
+- **Usage Data:** We may collect non-personal information about how you interact with Asti, such as the AI 
+models you use and the prompts you submit. This data helps us analyze usage trends and enhance platform 
+performance. However, we do not track users individually or store identifiable session data.
 - **Bug Reports and User Feedback:** If you report bugs or issues, we may collect information you provide, 
-  such as prompts, responses, screenshots, or other relevant details, to help us address the problem.
+  such as prompts, responses, screenshots, or other relevant details, to help us address the problem. Sharing this 
+  information is entirely optional.
 """)
 
 st.markdown("**Important Note:** Asti does **not** collect IP addresses, session duration information, or use cookies.")
