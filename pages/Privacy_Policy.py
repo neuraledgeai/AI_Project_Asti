@@ -80,17 +80,17 @@ st.markdown("""
 """)
 
 st.markdown("### 4. Sharing of Information")
-st.markdown("#### 4.1 Third-Party AI Models")
+st.markdown("##### 4.1 Third-Party AI Models")
 st.write("""
 Asti utilizes open-source AI models from Together AI. Your interactions with these models, including prompts and responses, may be subject to 
 Together AI's privacy policy, which can be found 
 [here](https://together.ai/privacy-policy). We encourage you to review their policy carefully.
 """)
 
-st.markdown("#### 4.2 No Third-Party Sharing")
+st.markdown("##### 4.2 No Third-Party Sharing")
 st.write("We **do not** share your information with any other third parties.")
 
-st.markdown("#### 4.3 Legal Requirements")
+st.markdown("##### 4.3 Legal Requirements")
 st.write("""
 We may disclose your information if required to do so by law or in the good faith belief that such action is necessary to:
 """)
