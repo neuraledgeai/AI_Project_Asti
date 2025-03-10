@@ -120,6 +120,5 @@ We may update this Privacy Policy from time to time. We will post any changes on
 
 st.markdown("#### 8. Contact Us")
 st.write("""
-If you have any questions about this Privacy Policy, please contact us at 
-[asti-support@example.com](mailto:asti-support@example.com).
+If you have any questions about this Privacy Policy, please contact us.
 """)
