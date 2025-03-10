@@ -58,7 +58,7 @@ Currently, Asti does not require any personal information such as your name, ema
 There is no sign-in or registration process.
 """)
 
-st.markdown("###### 2.2 Information Collected Automatically")
+st.markdown("###### 2.2 Information Collected")
 st.markdown("""
 - **Usage Data:** We may collect information about how you interact with Asti, such as the models you use and the prompts you submit. 
   This data is used to improve the platform and analyze usage trends.
@@ -82,15 +82,38 @@ st.markdown("""
 st.markdown("#### 4. Sharing of Information")
 st.markdown("###### 4.1 Third-Party AI Models")
 st.write("""
-Asti utilizes open-source AI models from Together AI. Your interactions with these models, including prompts and responses, may be subject to 
-Together AI's privacy policy, which can be found 
-[here](https://together.ai/privacy-policy). We encourage you to review their policy carefully.
+Asti integrates open-source AI models from Together AI to power its functionality. When you interact with these models—such as 
+submitting prompts and receiving responses—your data may be processed according to Together AI's Privacy Policy. To understand how 
+your interactions are handled, we recommend reviewing Together AI's Privacy Policy here:
+[Together AI Privacy Policy](https://www.together.ai/privacy). We encourage you to review their policy carefully.
 """)
 
-st.markdown("###### 4.2 No Third-Party Sharing")
-st.write("We **do not** share your information with any other third parties.")
+st.markdown("###### 4.2 Use of Streamlit Services")
+st.write("""
+This web application is fully powered by Streamlit Community Cloud, which provides hosting and deployment services for this platform. Since 
+Streamlit's services are used, certain data collection and processing may be subject to Streamlit's Privacy Policy. We recommend users review 
+Streamlit's Privacy Notice to understand how their data may be handled:
+[Streamlit Privacy Policy](https://streamlit.io/privacy-policy). We encourage you to review their policy carefully.
+""")
 
-st.markdown("###### 4.3 Legal Requirements")
+st.markdown("###### 4.3 Use of GitHub Services")
+st.write("""
+Development of AI Project Asti is entirely managed through GitHub, within 
+an [open-source repository available at GitHub](https://github.com/neuraledgeai/AI_Project_Asti). - Neural Edge AI: AI Project Asti. Since GitHub 
+provides hosting and version control for the project's codebase, certain interactions—such as accessing, forking, or contributing to 
+the repository—may be subject to GitHub's Privacy Policy. For more details on how GitHub handles data, we encourage users to review GitHub’s Privacy Policy here:
+[GitHub Privacy Policy](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). We encourage you to review their policy carefully.
+""")
+
+st.markdown("###### 4.4 No Third-Party Sharing")
+st.write("""
+We do not share any user data with third parties intentionally. However, since this platform relies on services from Together AI, Streamlit, and GitHub, some 
+interactions—such as AI model usage, web hosting, and code management—may involve data processing in accordance with their respective privacy policies. Beyond these 
+essential services, no data is shared with any other third parties. Our goal is to keep Asti a transparent, minimalistic, and privacy-focused platform, ensuring secure 
+and responsible data handling at all times.
+""")
+
+st.markdown("###### 4.5 Legal Requirements")
 st.write("""
 We may disclose your information if required to do so by law or in the good faith belief that such action is necessary to:
 """)
@@ -103,8 +126,11 @@ st.markdown("""
 
 st.markdown("#### 5. Data Security")
 st.write("""
-We take reasonable measures to protect your information from unauthorized access, use, or disclosure. However, no method of transmission 
-over the internet or method of electronic storage is completely secure. Therefore, we cannot guarantee absolute security.
+We take data security seriously and implement reasonable measures to protect any collected information from unauthorized access, misuse, or disclosure. Since 
+Asti follows a minimalistic data collection approach, we ensure that only essential data is processed through trusted services like Together AI, Streamlit, and 
+GitHub. However, while we strive to maintain a secure environment, it's important to note that no online platform can guarantee absolute security. Users are 
+encouraged to be mindful of the data they share and review the privacy policies of the services integrated into this platform. We remain committed to 
+transparency, security, and user privacy as core principles of Asti.
 """)
 
 st.markdown("#### 6. Children's Privacy")
@@ -115,7 +141,10 @@ If you are a parent or guardian and believe your child has provided us with pers
 
 st.markdown("#### 7. Changes to this Privacy Policy")
 st.write("""
-We may update this Privacy Policy from time to time. We will post any changes on this page and, if significant, notify you by email or through the platform.
+We may update this Privacy Policy from time to time to reflect improvements, legal requirements, or changes in the services we use. Any 
+modifications will be posted on this page, and if the updates are significant, we may provide additional notifications through the platform. We encourage 
+users to review this Privacy Policy periodically to stay informed about how we handle data. Continued use of Asti after any changes means you acknowledge 
+and accept the updated policy.
 """)
 
 st.markdown("#### 8. Contact Us")
