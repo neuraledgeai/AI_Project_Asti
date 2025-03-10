@@ -52,13 +52,13 @@ information when you use Asti. Please read it carefully.
 """)
 
 st.markdown("### 2. Information We Collect")
-st.markdown("#### 2.1 Information You Provide")
+st.markdown("##### 2.1 Information You Provide")
 st.write("""
 Currently, Asti does not require any personal information such as your name, email address, or contact details. 
 There is no sign-in or registration process.
 """)
 
-st.markdown("#### 2.2 Information Collected Automatically")
+st.markdown("##### 2.2 Information Collected Automatically")
 st.markdown("""
 - **Usage Data:** We may collect information about how you interact with Asti, such as the models you use and the prompts you submit. 
   This data is used to improve the platform and analyze usage trends.
