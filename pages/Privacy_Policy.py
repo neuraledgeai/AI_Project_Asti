@@ -41,17 +41,17 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Privacy Policy Content
-st.markdown("# Privacy Policy for AI Project Asti")
+st.markdown("## Privacy Policy for AI Project Asti")
 st.markdown("**Effective Date:** March 10, 2025")
 
-st.markdown("### 1. Introduction")
+st.markdown("#### 1. Introduction")
 st.write("""
 AI Project Asti ("Asti", "we", "us", or "our") is a not-for-profit, open-source platform provided by Neural Edge AI that allows users to interact with AI models. 
 We are committed to protecting the privacy of our users and strive to provide a transparent experience. This Privacy Policy outlines how we collect, use, and share 
 information when you use Asti. Please read it carefully.
 """)
 
-st.markdown("### 2. Information We Collect")
+st.markdown("#### 2. Information We Collect")
 st.markdown("##### 2.1 Information You Provide")
 st.write("""
 Currently, Asti does not require any personal information such as your name, email address, or contact details. 
