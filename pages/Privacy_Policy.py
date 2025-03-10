@@ -1,8 +1,6 @@
 import streamlit as st
 
 st.title("Privacy Policy")
-import streamlit as st
-
 st.markdown("""
 <style>
 body {
