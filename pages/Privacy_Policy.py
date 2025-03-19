@@ -41,7 +41,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Privacy Policy Content
-st.markdown("## Privacy Policy for AI Project Asti")
+st.markdown("## Privacy Policy")
 st.markdown("**Effective Date:** March 10, 2025")
 
 st.markdown("#### 1. Introduction")
