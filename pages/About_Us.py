@@ -66,14 +66,7 @@ improving to meet the needs of its users. In essence, AI Project Asti is more th
 and understanding of artificial intelligence.
 """)
 
-st.markdown("#### 4. No Warranty")
-st.write("""
-Asti is provided "as is" and "as available" without any warranties of any kind, either express or implied. We do not warrant that the platform will 
-be uninterrupted, error-free, or fully secure. We disclaim all warranties, including but not limited to, implied warranties of merchantability, fitness for a 
-particular purpose, and non-infringement.
-""")
-
-st.markdown("#### Why Open Source?")
+st.markdown("#### 2. Why Open Source?")
 st.write("""
 The decision to build AI Project Asti on an open-source foundation stems from a deep commitment to accessibility, transparency, and collaborative innovation. In a world 
 where AI technologies are rapidly reshaping industries and societies, it's crucial that these powerful tools are not locked behind proprietary walls, but rather made 
@@ -88,12 +81,7 @@ technologies. This approach fosters a vibrant community of developers, researche
 innovation at an accelerated pace.
 """)
 
-st.markdown("#### 6. Intellectual Property")
+st.markdown("#### 3. Contact Us")
 st.write("""
-Asti is an open-source platform. You retain ownership of any content you generate through the platform, and users should verify information independently before relying on it.
-""")
-
-st.markdown("#### 7. Contact Us")
-st.write("""
-For any questions or concerns regarding these Terms and Conditions, please contact us.
+For any questions or concerns, please contact us.
 """)
