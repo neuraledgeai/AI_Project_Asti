@@ -23,7 +23,7 @@ api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
 
 # Model names
-META_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free" #"meta-llama/Llama-3.3-70B-Instruct-Turbo"
+META_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
 
 # Functions to extract text from files
@@ -64,7 +64,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
-            
+
     # Model switch using segmented control
     model_choice = st.segmented_control(
         "",
@@ -72,10 +72,9 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
         format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
         default="Default"
     )
-    
+
     # Update model based on user choice
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
-
 
 # Display chat history
 for message in st.session_state.messages:
@@ -97,29 +96,42 @@ if user_input := st.chat_input("Type your message..."):
     messages_with_context.extend(st.session_state.messages)
 
     try:
-        # Generate AI response
-        response = client.chat.completions.create(
+        # Generate AI response with streaming
+        stream = client.chat.completions.create(
             model=st.session_state.selected_model,
             messages=messages_with_context,
-            #max_tokens=1000,  # Reasonable output size
+            stream=True,
         )
-        ai_message = response.choices[0].message.content
 
-        # Separate <think> part from main response
+        # Placeholder for response message
+        assistant_message = {"role": "assistant", "content": ""}
+        st.session_state.messages.append(assistant_message)
+
+        # Chat UI container
+        response_container = st.chat_message("assistant")
+
+        # Stream response chunk by chunk
+        full_response = ""
+        for chunk in stream:
+            text_chunk = chunk.choices[0].delta.content or ""
+            full_response += text_chunk
+            with response_container:
+                st.markdown(full_response)
+
+        # Extract <think>...</think> part
         think_pattern = re.compile(r"<think>(.*?)</think>", re.DOTALL)
-        think_match = think_pattern.search(ai_message)
+        think_match = think_pattern.search(full_response)
         think_content = think_match.group(1).strip() if think_match else None
-        clean_response = think_pattern.sub("", ai_message).strip()
+        clean_response = think_pattern.sub("", full_response).strip()
 
-        # Append and display AI response
-        st.session_state.messages.append({"role": "assistant", "content": clean_response})
-        with st.chat_message("assistant"):
-            st.markdown(clean_response)
+        # Update session state with clean response
+        assistant_message["content"] = clean_response
+        st.session_state.messages[-1] = assistant_message
 
-            # Show "thinking" part in an expander if it exists
-            if think_content:
-                with st.expander("🤔 Model's Thought Process"):
-                    st.markdown(think_content)
+        # Show "thinking" part in an expander if it exists
+        if think_content:
+            with st.expander("🤔 Model's Thought Process"):
+                st.markdown(think_content)
 
     except Exception as e:
         error_message = str(e)
