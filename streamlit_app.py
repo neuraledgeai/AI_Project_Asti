@@ -6,7 +6,7 @@ import re
 
 # Set page title and layout
 st.set_page_config(
-    page_title="Asti-M1hhhh",
+    page_title="Asti-M1",
     layout="wide",
     page_icon="🌟"
 )
@@ -107,16 +107,18 @@ if user_input := st.chat_input("Type your message..."):
         assistant_message = {"role": "assistant", "content": ""}
         st.session_state.messages.append(assistant_message)
 
-        # Chat UI container
+        # Create an empty placeholder for live updating
         response_container = st.chat_message("assistant")
+        response_placeholder = response_container.empty()
 
         # Stream response chunk by chunk
         full_response = ""
         for chunk in stream:
             text_chunk = chunk.choices[0].delta.content or ""
             full_response += text_chunk
-            with response_container:
-                st.markdown(full_response)
+
+            # Update the placeholder with the latest response
+            response_placeholder.markdown(full_response)
 
         # Extract <think>...</think> part
         think_pattern = re.compile(r"<think>(.*?)</think>", re.DOTALL)
