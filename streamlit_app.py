@@ -14,7 +14,7 @@ st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
 with st.sidebar.expander("Legal and Support"):
     st.page_link("pages/Terms_&_Conditions.py", label="Terms & Conditions", icon="📜")
     st.page_link("pages/Privacy_Policy.py", label="Privacy policy", icon="🛡️")
-    st.page_link("pages/About_Us.py", label="About Asti", icon="ℹ️")
+    st.page_link("pages/About_Us.py", label="About Us", icon="ℹ️")
     st.page_link("pages/Refund_policy.py", label="Refund policy", icon="🔄")
     st.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
@@ -64,7 +64,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
             st.success("✅ Document uploaded successfully! You can now start chatting.")
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
-
+            
     # Model switch using segmented control
     model_choice = st.segmented_control(
         "",
@@ -72,7 +72,7 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
         format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
         default="Default"
     )
-
+    
     # Update model based on user choice
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
@@ -96,41 +96,35 @@ if user_input := st.chat_input("Type your message..."):
     messages_with_context.extend(st.session_state.messages)
 
     try:
-        # Generate AI response with streaming
+        # Generate AI response as a stream
         stream = client.chat.completions.create(
             model=st.session_state.selected_model,
             messages=messages_with_context,
             stream=True,
         )
 
-        # Placeholder for response message
-        assistant_message = {"role": "assistant", "content": ""}
-        st.session_state.messages.append(assistant_message)
+        ai_message = ""
+        think_content = None
 
-        # Create an empty placeholder for live updating
-        response_container = st.chat_message("assistant")
-        response_placeholder = response_container.empty()
+        # Process streamed response
+        with st.chat_message("assistant"):
+            response_container = st.empty()
+            for chunk in stream:
+                if chunk.choices[0].delta.content:
+                    ai_message += chunk.choices[0].delta.content
+                    response_container.markdown(ai_message)
 
-        # Stream response chunk by chunk
-        full_response = ""
-        for chunk in stream:
-            text_chunk = chunk.choices[0].delta.content or ""
-            full_response += text_chunk
-
-            # Update the placeholder with the latest response
-            response_placeholder.markdown(full_response)
-
-        # Extract <think>...</think> part
+        # Extract and remove <think>...</think> part
         think_pattern = re.compile(r"<think>(.*?)</think>", re.DOTALL)
-        think_match = think_pattern.search(full_response)
-        think_content = think_match.group(1).strip() if think_match else None
-        clean_response = think_pattern.sub("", full_response).strip()
+        think_match = think_pattern.search(ai_message)
+        if think_match:
+            think_content = think_match.group(1).strip()
+            ai_message = think_pattern.sub("", ai_message).strip()  # Remove <think> section from main response
 
-        # Update session state with clean response
-        assistant_message["content"] = clean_response
-        st.session_state.messages[-1] = assistant_message
+        # Append final AI response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": ai_message})
 
-        # Show "thinking" part in an expander if it exists
+        # Display "thinking" part in expander if it exists
         if think_content:
             with st.expander("🤔 Model's Thought Process"):
                 st.markdown(think_content)
