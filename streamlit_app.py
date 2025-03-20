@@ -103,25 +103,27 @@ if user_input := st.chat_input("Type your message..."):
             stream=True,
         )
 
-        ai_message = ""
-        think_content = None
+        ai_message = ""  # Buffer to collect response
+        response_container = st.empty()
 
-        # Process streamed response
-        with st.chat_message("assistant"):
-            response_container = st.empty()
-            for chunk in stream:
-                if chunk.choices[0].delta.content:
-                    ai_message += chunk.choices[0].delta.content
-                    response_container.markdown(ai_message)
+        # Collect streamed response
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                ai_message += chunk.choices[0].delta.content
+                response_container.markdown(ai_message)  # Update UI dynamically
 
-        # Extract and remove <think>...</think> part
+        # Extract <think>...</think> part **after** receiving full response
         think_pattern = re.compile(r"<think>(.*?)</think>", re.DOTALL)
         think_match = think_pattern.search(ai_message)
-        if think_match:
-            think_content = think_match.group(1).strip()
-            ai_message = think_pattern.sub("", ai_message).strip()  # Remove <think> section from main response
 
-        # Append final AI response to chat history
+        if think_match:
+            think_content = think_match.group(1).strip()  # Extract thinking part
+            ai_message = think_pattern.sub("", ai_message).strip()  # Remove thinking part from response
+        else:
+            think_content = None  # No thinking part found
+
+        # Update chat with cleaned response
+        response_container.markdown(ai_message)
         st.session_state.messages.append({"role": "assistant", "content": ai_message})
 
         # Display "thinking" part in expander if it exists
