@@ -31,7 +31,8 @@ DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
 # Functions to extract text from files
 def read_pdf(file):
     pdf_reader = PdfReader(file)
-    return "\n\n".join(page.extract_text().strip() for page in pdf_reader.pages if page.extract_text())
+    text = "\n\n".join(page.extract_text().strip() for page in pdf_reader.pages if page.extract_text())
+    return text
 
 def read_word(file):
     doc = Document(file)
@@ -67,24 +68,24 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     )
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
-# Display chat history (excluding last message to prevent auto-scroll)
-for message in st.session_state.messages[:-1]:  
+# Display chat history
+for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.write(message["content"])  # Using `st.write()` to prevent forced scrolling
+        st.markdown(message["content"])
 
 # Chat input and streaming response
 if user_input := st.chat_input("Type your message..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-        st.write(user_input)  
+        st.markdown(user_input)
 
     # Add document context if available
     context_message = f"The user uploaded a document. Context:\n\n{st.session_state.document_content}\n\n" if st.session_state.document_content else ""
     messages_with_context = [{"role": "system", "content": context_message}] if context_message else []
     messages_with_context.extend(st.session_state.messages)
 
-    # Container to hold streamed response (Prevents auto-scroll)
-    response_container = st.container()
+    # Placeholder for streaming response
+    response_placeholder = st.empty()
     full_response = ""
 
     try:
@@ -96,31 +97,26 @@ if user_input := st.chat_input("Type your message..."):
         )
 
         think_content = None
-        with response_container:
-            ai_placeholder = st.empty()  # Static placeholder to prevent UI jumps
-
-            for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    full_response += chunk.choices[0].delta.content
-                    # Remove <think> part dynamically
-                    clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
-                    ai_placeholder.write(clean_response)  # Live update (NO SCROLLING!)
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                full_response += chunk.choices[0].delta.content
+                # Remove <think> part dynamically
+                clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
+                response_placeholder.markdown(clean_response)  # Update single placeholder (Prevents auto-scrolling)
 
         # Extract "thinking" content if present
         think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
         if think_match:
             think_content = think_match.group(1).strip()
 
-        # Finally append the AI message to history **only after streaming ends**
+        # Append final AI response to chat history
         st.session_state.messages.append({"role": "assistant", "content": clean_response})
-
-        # Show final AI response (Ensures smooth UI)
-        ai_placeholder.write(clean_response)
+        response_placeholder.markdown(clean_response)  # Ensure final update
 
         # Show "thinking" process if it exists
         if think_content:
             with st.expander("🤔 Model's Thought Process"):
-                st.write(think_content)
+                st.markdown(think_content)
 
     except Exception as e:
         error_message = str(e)
