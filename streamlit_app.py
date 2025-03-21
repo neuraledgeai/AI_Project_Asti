@@ -31,8 +31,7 @@ DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
 # Functions to extract text from files
 def read_pdf(file):
     pdf_reader = PdfReader(file)
-    text = "\n\n".join(page.extract_text().strip() for page in pdf_reader.pages if page.extract_text())
-    return text
+    return "\n\n".join(page.extract_text().strip() for page in pdf_reader.pages if page.extract_text())
 
 def read_word(file):
     doc = Document(file)
@@ -68,8 +67,8 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     )
     st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
 
-# Display chat history
-for message in st.session_state.messages:
+# Display chat history (except last message to prevent auto-scroll)
+for message in st.session_state.messages[:-1]:  # Show all except the last one
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
@@ -84,7 +83,7 @@ if user_input := st.chat_input("Type your message..."):
     messages_with_context = [{"role": "system", "content": context_message}] if context_message else []
     messages_with_context.extend(st.session_state.messages)
 
-    # Placeholder for streaming response
+    # Placeholder for streaming response (Prevents auto-scroll)
     response_placeholder = st.empty()
     full_response = ""
 
@@ -102,16 +101,18 @@ if user_input := st.chat_input("Type your message..."):
                 full_response += chunk.choices[0].delta.content
                 # Remove <think> part dynamically
                 clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
-                response_placeholder.markdown(clean_response)  # Update single placeholder (Prevents auto-scrolling)
+                response_placeholder.markdown(clean_response)  # Update single placeholder (Prevents auto-scroll)
 
         # Extract "thinking" content if present
         think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
         if think_match:
             think_content = think_match.group(1).strip()
 
-        # Append final AI response to chat history
+        # Finally append the AI message to history (Only after streaming ends)
         st.session_state.messages.append({"role": "assistant", "content": clean_response})
-        response_placeholder.markdown(clean_response)  # Ensure final update
+
+        # Show final AI response (Prevents unnecessary re-draws)
+        response_placeholder.markdown(clean_response)
 
         # Show "thinking" process if it exists
         if think_content:
