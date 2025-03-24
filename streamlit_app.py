@@ -37,7 +37,10 @@ def fetch_snippets(query, api_key):
     results = search.get_dict()
     organic_results = results.get("organic_results", [])
     snippets = [i.get("snippet", "") for i in organic_results if "snippet" in i]
-    return " ".join(snippets)
+    sources = [(i.get("source", "Unknown Source"), i.get("link", "#")) for i in organic_results if "source" in i and "link" in i]
+    snippets_text = " ".join(snippets)
+    sources_text = "Sources:\n" + "\n".join([f"- {source}: {link}" for source, link in set(sources)]) if sources else "Sources: None"
+    return f"{snippets_text}\n\n{sources_text}"
 
 # Functions to extract text from files
 def read_pdf(file):
