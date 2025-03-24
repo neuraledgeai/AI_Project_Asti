@@ -99,7 +99,7 @@ for message in st.session_state.messages:
 
 
 if model_choice == "Web Search":
-    placeholder = "Search Query"
+    placeholder = "Type your search query..."
 else:
     placeholder = "Type your message..."
     
