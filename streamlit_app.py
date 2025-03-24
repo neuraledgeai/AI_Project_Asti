@@ -3,6 +3,7 @@ from together import Together
 from PyPDF2 import PdfReader
 from docx import Document
 import re
+from serpapi import GoogleSearch
 
 # Set page title and layout
 st.set_page_config(
@@ -23,10 +24,19 @@ with st.sidebar.expander("Legal and Support"):
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
 client = Together(api_key=api_key)
+serp_api_key = st.secrets["SERP_API_KEY"]
 
 # Model names
 META_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
+
+# Function to fetch web search results
+def fetch_web_results(query, api_key):
+    params = {"engine": "google", "q": query, "api_key": api_key}
+    search = GoogleSearch(params)
+    results = search.get_dict()
+    snippets = [i.get("snippet", "") for i in results.get("organic_results", []) if "snippet" in i]
+    return " ".join(snippets)
 
 # Functions to extract text from files
 def read_pdf(file):
@@ -62,11 +72,13 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
     # Model switch using segmented control
     model_choice = st.segmented_control(
         "",
-        options=["Default", "Reason"],
-        format_func=lambda x: "Reason" if x == "Reason" else "Turbo Chat",
+        options=["Default", "Reason", "Web Search"],
+        format_func=lambda x: "Web Search" if x == "Web Search" else ("Reason" if x == "Reason" else "Turbo Chat"),
         default="Default"
     )
-    st.session_state.selected_model = DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL
+    st.session_state.selected_model = (
+        DEEPSEEK_MODEL if model_choice == "Reason" else ("Web Search" if model_choice == "Web Search" else META_MODEL)
+    )
 
 # Display chat history
 for message in st.session_state.messages:
@@ -79,45 +91,47 @@ if user_input := st.chat_input("Type your message..."):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Add document context if available
-    context_message = f"The user uploaded a document. Context:\n\n{st.session_state.document_content}\n\n" if st.session_state.document_content else ""
-    messages_with_context = [{"role": "system", "content": context_message}] if context_message else []
-    messages_with_context.extend(st.session_state.messages)
-
     # Placeholder for streaming response
     response_placeholder = st.empty()
     full_response = ""
 
     try:
-        # Stream AI response
-        stream = client.chat.completions.create(
-            model=st.session_state.selected_model,
-            messages=messages_with_context,
-            stream=True,
-        )
+        if model_choice == "Web Search":
+            search_results = fetch_web_results(user_input, serp_api_key)
+            context_message = f"Here are some relevant snippets from the web: {search_results}" if search_results else "No relevant web search results found."
+            response_placeholder.markdown(context_message)
+            st.session_state.messages.append({"role": "assistant", "content": context_message})
+        else:
+            # Add document context if available
+            context_message = f"The user uploaded a document. Context:\n\n{st.session_state.document_content}\n\n" if st.session_state.document_content else ""
+            messages_with_context = [{"role": "system", "content": context_message}] if context_message else []
+            messages_with_context.extend(st.session_state.messages)
 
-        think_content = None
-        for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta.content:
-                full_response += chunk.choices[0].delta.content
-                # Remove <think> part dynamically
-                clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
-                response_placeholder.markdown(clean_response)  # Update single placeholder (Prevents auto-scrolling)
+            # Stream AI response
+            stream = client.chat.completions.create(
+                model=st.session_state.selected_model,
+                messages=messages_with_context,
+                stream=True,
+            )
 
-        # Extract "thinking" content if present
-        think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
-        if think_match:
-            think_content = think_match.group(1).strip()
+            think_content = None
+            for chunk in stream:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    full_response += chunk.choices[0].delta.content
+                    clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
+                    response_placeholder.markdown(clean_response)
 
-        # Append final AI response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": clean_response})
-        response_placeholder.markdown(clean_response)  # Ensure final update
+            think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
+            if think_match:
+                think_content = think_match.group(1).strip()
 
-        # Show "thinking" process if it exists
-        if think_content:
-            with st.expander("🤔 Model's Thought Process"):
-                st.markdown(think_content)
+            st.session_state.messages.append({"role": "assistant", "content": clean_response})
+            response_placeholder.markdown(clean_response)
 
+            if think_content:
+                with st.expander("🤔 Model's Thought Process"):
+                    st.markdown(think_content)
+    
     except Exception as e:
         error_message = str(e)
         if "Input validation error" in error_message and "tokens" in error_message:
