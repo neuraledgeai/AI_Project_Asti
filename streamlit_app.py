@@ -109,7 +109,7 @@ if user_input := st.chat_input("Type your message..."):
     if model_choice == "Web Search":
         try:
             search_results = fetch_snippets(user_input, serp_api_key)
-            prompt = f"Query: {user_input}. Search Results: {search_results}. Please frame an appropriate output from this."
+            prompt = f"Searched for: {user_input}. Search Results: {search_results}. Please frame an appropriate output from this."
             
             stream = client.chat.completions.create(
                 model=META_MODEL,
