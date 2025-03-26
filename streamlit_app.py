@@ -12,6 +12,17 @@ st.set_page_config(
     page_icon="🌟"
 )
 
+# Function to save chat history as a Word document
+def save_chat_to_docx():
+    doc = Document()
+    doc.add_heading("Chat History", level=1)
+
+    for message in st.session_state.messages:
+        role = "User" if message["role"] == "user" else "AI Assistant"
+        doc.add_paragraph(f"{role}: {message['content']}")
+
+    doc.save("chat_history.docx")
+
 # Sidebar navigation
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
 st.sidebar.page_link("http://www.google.com", label="Contact Us", icon="👍🏻")
@@ -19,6 +30,15 @@ if st.sidebar.button("🗑️ Clear Chat"):
     st.session_state.messages = []
     st.session_state.document_content = None
     st.rerun()
+if st.sidebar.button("📥 Download Chat"):
+    save_chat_to_docx()
+    with open("chat_history.docx", "rb") as file:
+        st.sidebar.download_button(
+            label="📄 Download Chat as .docx",
+            data=file,
+            file_name="chat_history.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
 
 
 # Initialize Together client
