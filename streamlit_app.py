@@ -184,3 +184,14 @@ if user_input := st.chat_input(placeholder):
             error_message = str(e)
             if "Input validation error" in error_message and "tokens" in error_message:
                 st.warning("⚠️ Token limit reached for Reason mode. Please start a new chat to continue with Reason mode or switch to Default mode and continue here.")
+
+with st.container():
+    if st.button("📥 Download Chat as .docx"):
+        save_chat_to_docx()
+        with open("chat_history.docx", "rb") as file:
+            st.download_button(
+                label="📄 Download Chat",
+                data=file,
+                file_name="chat_history.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
