@@ -14,7 +14,7 @@ st.set_page_config(
 
 # Sidebar navigation
 st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
-st.page_link("http://www.google.com", label="Contact Us", icon="👍🏻")
+st.sidebar.page_link("http://www.google.com", label="Contact Us", icon="👍🏻")
 if st.sidebar.button("🗑️ Clear Chat"):
     st.session_state.messages = []
     st.session_state.document_content = None
