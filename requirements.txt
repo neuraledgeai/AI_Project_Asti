@@ -3,7 +3,3 @@ together
 PyPDF2
 python-docx
 google-search-results
-transformers
-torch
-accelerate
-bitsandbytes
