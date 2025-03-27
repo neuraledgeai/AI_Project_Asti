@@ -21,7 +21,7 @@ with st.sidebar.expander("Legal and Support"):
     st.page_link("pages/Contact_Us.py", label="Contact Us", icon="📞")
 
 # Load Hugging Face model
-pipe = pipeline("text-generation", model="deepseek-ai/DeepSeek-V3-0324", trust_remote_code=True)
+pipe = pipeline("text-generation", model="deepseek-ai/DeepSeek-V3-0324", trust_remote_code=True, device="cpu")
 
 # Functions to extract text from files
 def read_pdf(file):
