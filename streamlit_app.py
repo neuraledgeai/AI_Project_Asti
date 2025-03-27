@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # Sidebar navigation
-st.sidebar.page_link("app.py", label="Chat", icon="💬")
+st.sidebar.page_link("streamlit_app.py", label="Chat", icon="💬")
 
 # Initialize Together client
 api_key = st.secrets["API_KEY"]
