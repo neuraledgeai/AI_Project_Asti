@@ -6,7 +6,7 @@ import re
 
 # Set page title and layout
 st.set_page_config(
-    page_title="Asti-M1qq",
+    page_title="Asti-M1",
     layout="wide",
     page_icon="🌟"
 )
