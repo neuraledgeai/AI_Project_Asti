@@ -121,7 +121,7 @@ if user_input := st.chat_input(placeholder):
 
         if decision_text == "YES":
             # **Step 2: Generate a Proper Search Query**
-            refine_prompt = f"User asked: {user_input}. Generate the most relevant Google search query."
+            refine_prompt = f"User is asking for a web search, here is what they asked: {user_input}. Please generate appropriate search terms out of this."
             refine_response = client.chat.completions.create(
                 model=META_MODEL,
                 messages=[{"role": "system", "content": refine_prompt}]
