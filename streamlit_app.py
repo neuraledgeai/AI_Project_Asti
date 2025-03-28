@@ -107,9 +107,9 @@ if user_input := st.chat_input(placeholder):
     if model_choice == "Web Search":
         # **Step 1: Ask Model If a Search is Required**
         decision_prompt = (
-            f"User said: '{user_input}'. The last response was: '{st.session_state.messages[-2]['content'] if len(st.session_state.messages) > 1 else 'N/A'}'. "
-            "Does the user want to fetch online information? If yes, reply with 'YES'. If not, reply with 'NO'. "
-            "Avoid searching if the user just acknowledges (e.g., 'ok', 'yes', 'good', 'thanks', 'continue')."
+            f"The user has turned on the web search mode, meaning they opted for a web search, here is what they have asked: '{user_input}'. The last response was: '{st.session_state.messages[-2]['content'] if len(st.session_state.messages) > 1 else 'N/A'}'. "
+            "Now go thorough what the user has asked and tell whether they really need a web search or just simply speaking to the model, just analyse. If yes, reply with 'YES'. If not, reply with 'NO'. "
+            #"Avoid searching if the user just acknowledges (e.g., 'ok', 'yes', 'good', 'thanks', 'continue')."
         )
         
         decision_response = client.chat.completions.create(
