@@ -6,7 +6,7 @@ from serpapi import GoogleSearch
 
 # Set page title and layout
 st.set_page_config(
-    page_title="Asti-M1n",
+    page_title="Asti-M1",
     layout="wide",
     page_icon="🌟"
 )
