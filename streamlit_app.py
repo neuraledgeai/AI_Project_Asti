@@ -107,9 +107,9 @@ if user_input := st.chat_input(placeholder):
     if model_choice == "Web Search":
         # **Step 1: Ask Model If a Search is Required**
         decision_prompt = (
-            f"User asked: '{user_input}'. The last response was: '{st.session_state.messages[-2]['content'] if len(st.session_state.messages) > 1 else 'N/A'}'. "
-            "Determine if a web search is required. Do NOT search if the user is just acknowledging (e.g., 'ok', 'yes', 'good', 'thanks', 'continue'). "
-            "If a search is needed, reply only with 'YES'. If not, reply only with 'NO'."
+            f"User said: '{user_input}'. The last response was: '{st.session_state.messages[-2]['content'] if len(st.session_state.messages) > 1 else 'N/A'}'. "
+            "Does the user want to fetch online information? If yes, reply with 'YES'. If not, reply with 'NO'. "
+            "Avoid searching if the user just acknowledges (e.g., 'ok', 'yes', 'good', 'thanks', 'continue')."
         )
         
         decision_response = client.chat.completions.create(
@@ -121,7 +121,7 @@ if user_input := st.chat_input(placeholder):
 
         if decision_text == "YES":
             # **Step 2: Generate a Proper Search Query**
-            refine_prompt = f"User asked: {user_input}. Generate a highly relevant Google search query."
+            refine_prompt = f"User asked: {user_input}. Generate the most relevant Google search query."
             refine_response = client.chat.completions.create(
                 model=META_MODEL,
                 messages=[{"role": "system", "content": refine_prompt}]
@@ -131,7 +131,7 @@ if user_input := st.chat_input(placeholder):
             search_results = fetch_snippets(search_query, serp_api_key)
             
             # **Step 3: Generate the Final Response**
-            final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Frame an informative and engaging response with appropriate boldness and linked texts."
+            final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Provide an informative, engaging response using bold and linked texts."
             stream = client.chat.completions.create(
                 model=META_MODEL,
                 messages=[{"role": "system", "content": final_prompt}],
@@ -145,9 +145,20 @@ if user_input := st.chat_input(placeholder):
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         else:
-            # **Natural response for acknowledgments**
-            response_placeholder.markdown("👍 Got it!")
-            st.session_state.messages.append({"role": "assistant", "content": "👍 Got it!"})
+            # **Generate a normal AI response**
+            normal_prompt = f"User: {user_input}. Respond naturally without searching the web."
+            normal_response = client.chat.completions.create(
+                model=META_MODEL,
+                messages=[{"role": "system", "content": normal_prompt}],
+                stream=True,
+            )
+
+            for chunk in normal_response:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    full_response += chunk.choices[0].delta.content
+                    response_placeholder.markdown(full_response)
+
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     else:
         messages_with_context = [{"role": "system", "content": st.session_state.document_content}] if st.session_state.document_content else []
@@ -160,23 +171,12 @@ if user_input := st.chat_input(placeholder):
                 stream=True,
             )
 
-            think_content = None
             for chunk in stream:
                 if chunk.choices and chunk.choices[0].delta.content:
                     full_response += chunk.choices[0].delta.content
-                    clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
-                    response_placeholder.markdown(clean_response)
+                    response_placeholder.markdown(full_response)
 
-            think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
-            if think_match:
-                think_content = think_match.group(1).strip()
-
-            st.session_state.messages.append({"role": "assistant", "content": clean_response})
-            response_placeholder.markdown(clean_response)
-
-            if think_content:
-                with st.expander("🤔 Model's Thought Process"):
-                    st.markdown(think_content)
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
 
         except Exception as e:
             error_message = str(e)
