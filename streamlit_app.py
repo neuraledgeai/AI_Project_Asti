@@ -105,7 +105,7 @@ if user_input := st.chat_input(placeholder):
         decision_prompt = (
             f"User has turned on Web Search mode and asked: '{user_input}'. "
             "Analyze whether this requires an internet search. "
-            "If yes, reply with 'YES'. If not, reply with 'NO'. "
+            "If yes, reply with 'YES'. If not, reply with 'NO'. No other words or sentences, only YES or NO."
         )
         
         decision_response = client.chat.completions.create(
