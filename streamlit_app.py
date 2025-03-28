@@ -90,12 +90,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+placeholder = "Type your search query..." if model_choice == "Web Search" else "Type your message..."
 
-if model_choice == "Web Search":
-    placeholder = "Type your search query..."
-else:
-    placeholder = "Type your message..."
-    
 # Chat input and streaming response  
 if user_input := st.chat_input(placeholder):
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -105,32 +101,75 @@ if user_input := st.chat_input(placeholder):
     response_placeholder = st.empty()
     full_response = ""
 
-    # **NEW: Let the model decide if a web search is needed**
-    decision_prompt = f"User asked: {user_input}. Should we perform a web search? Reply with only 'YES' or 'NO'."
-    decision_response = client.chat.completions.create(
-        model=META_MODEL,
-        messages=[{"role": "system", "content": decision_prompt}]
-    )
-    
-    decision_text = decision_response.choices[0].message.content.strip().upper()
-    
-    if model_choice == "Web Search" and decision_text == "YES":
+    if model_choice == "Web Search":
+        # **NEW: Let the model decide if a web search is required**
+        decision_prompt = f"User asked: {user_input}. Should we perform a web search? Reply with only 'YES' or 'NO'."
+        decision_response = client.chat.completions.create(
+            model=META_MODEL,
+            messages=[{"role": "system", "content": decision_prompt}]
+        )
+        
+        decision_text = decision_response.choices[0].message.content.strip().upper()
+        
+        if decision_text == "YES":
+            try:
+                # **NEW: Let the model generate a better search query**
+                refine_prompt = f"User asked: {user_input}. Generate a highly relevant Google search query."
+                refine_response = client.chat.completions.create(
+                    model=META_MODEL,
+                    messages=[{"role": "system", "content": refine_prompt}]
+                )
+                
+                search_query = refine_response.choices[0].message.content.strip()
+                search_results = fetch_snippets(search_query, serp_api_key)
+                
+                # Generate the final response
+                final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Frame an informative and engaging response with appropriate boldness and linked texts."
+                stream = client.chat.completions.create(
+                    model=META_MODEL,
+                    messages=[{"role": "system", "content": final_prompt}],
+                    stream=True,
+                )
+
+                for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        full_response += chunk.choices[0].delta.content
+                        response_placeholder.markdown(full_response)
+
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+            except Exception as e:
+                st.error(f"❌ Error fetching search results: {e}")
+        else:
+            # If no web search is needed, respond like a normal chatbot
+            messages_with_context = [{"role": "system", "content": st.session_state.document_content}] if st.session_state.document_content else []
+            messages_with_context.extend(st.session_state.messages)
+
+            try:
+                stream = client.chat.completions.create(
+                    model=st.session_state.selected_model,
+                    messages=messages_with_context,
+                    stream=True,
+                )
+
+                for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        full_response += chunk.choices[0].delta.content
+                        response_placeholder.markdown(full_response)
+
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+            except Exception as e:
+                st.error(f"❌ Error processing response: {e}")
+
+    else:
+        # Turbo Chat & Reason Mode: No web search logic, just normal chatbot behavior
+        messages_with_context = [{"role": "system", "content": st.session_state.document_content}] if st.session_state.document_content else []
+        messages_with_context.extend(st.session_state.messages)
+
         try:
-            # **NEW: Let the model generate a better search query**
-            refine_prompt = f"User asked: {user_input}. Generate a highly relevant Google search query."
-            refine_response = client.chat.completions.create(
-                model=META_MODEL,
-                messages=[{"role": "system", "content": refine_prompt}]
-            )
-            
-            search_query = refine_response.choices[0].message.content.strip()
-            search_results = fetch_snippets(search_query, serp_api_key)
-            
-            # Generate the final response
-            final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Frame an informative and engaging response with appropriate boldness and linked texts."
             stream = client.chat.completions.create(
-                model=META_MODEL,
-                messages=[{"role": "system", "content": final_prompt}],
+                model=st.session_state.selected_model,
+                messages=messages_with_context,
                 stream=True,
             )
 
@@ -140,38 +179,6 @@ if user_input := st.chat_input(placeholder):
                     response_placeholder.markdown(full_response)
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
-        except Exception as e:
-            st.error(f"❌ Error fetching search results: {e}")
-    else:
-        messages_with_context = [{"role": "system", "content": st.session_state.document_content}] if st.session_state.document_content else []
-        messages_with_context.extend(st.session_state.messages)
-        
-        try:
-            stream = client.chat.completions.create(
-                model=st.session_state.selected_model,
-                messages=messages_with_context,
-                stream=True,
-            )
-
-            think_content = None
-            for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    full_response += chunk.choices[0].delta.content
-                    clean_response = re.sub(r"<think>.*?</think>", "", full_response, flags=re.DOTALL).strip()
-                    response_placeholder.markdown(clean_response)
-
-            think_match = re.search(r"<think>(.*?)</think>", full_response, re.DOTALL)
-            if think_match:
-                think_content = think_match.group(1).strip()
-
-            st.session_state.messages.append({"role": "assistant", "content": clean_response})
-            response_placeholder.markdown(clean_response)
-
-            if think_content:
-                with st.expander("🤔 Model's Thought Process"):
-                    st.markdown(think_content)
 
         except Exception as e:
-            error_message = str(e)
-            if "Input validation error" in error_message and "tokens" in error_message:
-                st.warning("⚠️ Too many texts, token limit has reached. Please start a new chat to continue.")
+            st.error(f"❌ Error processing response: {e}")
