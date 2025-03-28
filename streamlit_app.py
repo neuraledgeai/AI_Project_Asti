@@ -38,7 +38,6 @@ def fetch_snippets(query, api_key):
         link = i.get("link", "#")
         
         if snippet:
-            # Format the source as a clickable link (Markdown format)
             linked_source = f"[{source}]({link})"
             snippets_with_sources.append(f"{snippet} ({linked_source})")
 
@@ -91,9 +90,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-
 if model_choice == "Web Search":
-    placeholder = "Type your search query..."
+    placeholder = "Type your message..."
 else:
     placeholder = "Type your message..."
     
@@ -108,21 +106,35 @@ if user_input := st.chat_input(placeholder):
 
     if model_choice == "Web Search":
         try:
-            search_results = fetch_snippets(user_input, serp_api_key)
-            prompt = f"Query: {user_input}. Search Results: {search_results}. Please frame an appropriate output from this. Make it very informative and engaging with appropriate boldness and linked texts. No headings for now."
-            
-            stream = client.chat.completions.create(
+            # Step 1: Ask the model if a web search is needed and get a refined query
+            decision_prompt = f"Decide if a web search is needed for this query: '{user_input}'. If yes, generate an appropriate search query. If no, just reply with 'NO_SEARCH_REQUIRED'."
+            decision_response = client.chat.completions.create(
                 model=META_MODEL,
-                messages=[{"role": "system", "content": prompt}],
-                stream=True,
-            )
+                messages=[{"role": "system", "content": decision_prompt}]
+            ).choices[0].message["content"]
 
-            for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    full_response += chunk.choices[0].delta.content
-                    response_placeholder.markdown(full_response)
+            # Step 2: Perform web search only if needed
+            if decision_response.strip() != "NO_SEARCH_REQUIRED":
+                search_query = decision_response.strip()
+                search_results = fetch_snippets(search_query, serp_api_key)
+                search_summary_prompt = f"Query: {user_input}. Search Results: {search_results}. Please frame an appropriate output from this. Make it very informative and engaging with appropriate boldness and linked texts. No headings for now."
 
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
+                # Step 3: Generate response using search results
+                stream = client.chat.completions.create(
+                    model=META_MODEL,
+                    messages=[{"role": "system", "content": search_summary_prompt}],
+                    stream=True,
+                )
+
+                for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        full_response += chunk.choices[0].delta.content
+                        response_placeholder.markdown(full_response)
+
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+            else:
+                # If no search is needed, respond normally
+                st.session_state.selected_model = META_MODEL
         except Exception as e:
             st.error(f"❌ Error fetching search results: {e}")
     else:
@@ -155,6 +167,4 @@ if user_input := st.chat_input(placeholder):
                     st.markdown(think_content)
 
         except Exception as e:
-            error_message = str(e)
-            if "Input validation error" in error_message and "tokens" in error_message:
-                st.warning("⚠️ Too many texts, token limit has reached. Please start a new chat to continue.")
+            st.warning("⚠️ Too many texts, token limit has reached. Please start a new chat to continue.")
