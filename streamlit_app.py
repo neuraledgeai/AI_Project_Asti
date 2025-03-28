@@ -2,7 +2,6 @@ import streamlit as st
 from together import Together
 from PyPDF2 import PdfReader
 from docx import Document
-import re
 from serpapi import GoogleSearch
 
 # Set page title and layout
@@ -41,7 +40,7 @@ def fetch_snippets(query, api_key):
             linked_source = f"[{source}]({link})"
             snippets_with_sources.append(f"{snippet} ({linked_source})")
 
-    return " ".join(snippets_with_sources)
+    return " ".join(snippets_with_sources) if snippets_with_sources else "No relevant information found."
 
 # Functions to extract text from files
 def read_pdf(file):
@@ -74,26 +73,23 @@ with st.expander("📄 Upload a Document (Optional)", expanded=True):
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
 
-    # Model switch using segmented control
-    model_choice = st.segmented_control(
-        "",
-        options=["Default", "Reason", "Web Search"],
-        format_func=lambda x: "Reason" if x == "Reason" else "Web Search" if x == "Web Search" else "Turbo Chat",
-        default="Default"
-    )
-    st.session_state.selected_model = (
-        DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL if model_choice == "Web Search" else META_MODEL
-    )
+# Model switch using segmented control
+model_choice = st.segmented_control(
+    "",
+    options=["Default", "Reason", "Web Search"],
+    format_func=lambda x: "Reason" if x == "Reason" else "Web Search" if x == "Web Search" else "Turbo Chat",
+    default="Default"
+)
+st.session_state.selected_model = (
+    DEEPSEEK_MODEL if model_choice == "Reason" else META_MODEL if model_choice == "Web Search" else META_MODEL
+)
 
 # Display chat history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if model_choice == "Web Search":
-    placeholder = "Type your search query..."
-else:
-    placeholder = "Type your message..."
+placeholder = "Type your search query..." if model_choice == "Web Search" else "Type your message..."
 
 # Chat input and streaming response  
 if user_input := st.chat_input(placeholder):
@@ -107,9 +103,9 @@ if user_input := st.chat_input(placeholder):
     if model_choice == "Web Search":
         # **Step 1: Ask Model If a Search is Required**
         decision_prompt = (
-            f"The user has turned on the web search mode, meaning they opted for a web search, here is what they have asked: '{user_input}'. The last response was: '{st.session_state.messages[-2]['content'] if len(st.session_state.messages) > 1 else 'N/A'}'. "
-            "Now go thorough what the user has asked and tell whether they really need a web search or just simply speaking to the model, just analyse. If yes, reply with 'YES'. If not, reply with 'NO'. "
-            #"Avoid searching if the user just acknowledges (e.g., 'ok', 'yes', 'good', 'thanks', 'continue')."
+            f"User has turned on Web Search mode and asked: '{user_input}'. "
+            "Analyze whether this requires an internet search. "
+            "If yes, reply with 'YES'. If not, reply with 'NO'. "
         )
         
         decision_response = client.chat.completions.create(
@@ -121,7 +117,7 @@ if user_input := st.chat_input(placeholder):
 
         if decision_text == "YES":
             # **Step 2: Generate a Proper Search Query**
-            refine_prompt = f"User is requesting a web search, this is what they have asked: {user_input}. Please make a one sentence search terms it should be concise, provide only it, no other sentences or words."
+            refine_prompt = f"User's request: {user_input}. Please make a one sentence search terms it should be concise, provide only it, no other sentences or words."
             refine_response = client.chat.completions.create(
                 model=META_MODEL,
                 messages=[{"role": "system", "content": refine_prompt}]
@@ -131,7 +127,7 @@ if user_input := st.chat_input(placeholder):
             search_results = fetch_snippets(search_query, serp_api_key)
             
             # **Step 3: Generate the Final Response**
-            final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Provide an informative, engaging response using bold and linked texts."
+            final_prompt = f"User asked: {user_input}. Search Results: {search_results}. Provide a clear response using bold and linked texts."
             stream = client.chat.completions.create(
                 model=META_MODEL,
                 messages=[{"role": "system", "content": final_prompt}],
@@ -145,7 +141,7 @@ if user_input := st.chat_input(placeholder):
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         else:
-            # **Generate a normal AI response**
+            # **Generate a normal AI response (no web search)**
             normal_prompt = f"User: {user_input}. Respond naturally without searching the web."
             normal_response = client.chat.completions.create(
                 model=META_MODEL,
@@ -161,6 +157,7 @@ if user_input := st.chat_input(placeholder):
             st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     else:
+        # **Turbo Chat & Reason Modes (No Web Search Logic)**
         messages_with_context = [{"role": "system", "content": st.session_state.document_content}] if st.session_state.document_content else []
         messages_with_context.extend(st.session_state.messages)
         
@@ -181,4 +178,4 @@ if user_input := st.chat_input(placeholder):
         except Exception as e:
             error_message = str(e)
             if "Input validation error" in error_message and "tokens" in error_message:
-                st.warning("⚠️ Too many texts, token limit has reached. Please start a new chat to continue.")
+                st.warning("⚠️ Too much text, token limit reached. Start a new chat to continue.")
